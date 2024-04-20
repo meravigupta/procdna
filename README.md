@@ -31,7 +31,7 @@ command: pip install beautifulsoup4
 
 ### step 1 : Install all the above modules
 
-### step 2: Change the username and password in linkedin-scrapper.py file.
+### step 2: Change the username and password in li-scrape.py file.
 
 ### step 3 : Run the script and enjoy. Once the code completes execution, you will have your LinkedIn people search data printed.
 
