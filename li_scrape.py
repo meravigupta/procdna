@@ -1,8 +1,11 @@
-from selenium import webdriver
-import time
 import re
+import time
+import pandas as pd
+from selenium import webdriver
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
+
+excel_file_path = 'li_scrape_data.xlsx'
 
 # Function to clean and format strings
 def prettify_string(input_string, num=False):
@@ -67,15 +70,15 @@ class Linkedin():
         if link_show_all_post:
             driver.get(link_show_all_post)
             start = time.time()
+            initialScroll = 0
+            finalScroll = 1000
             while True:
-                initialScroll = 0
-                finalScroll = 2500
                 driver.execute_script(f"window.scrollTo({initialScroll}, {finalScroll})")
                 initialScroll = finalScroll
-                finalScroll += 2500
+                finalScroll += 1000
                 time.sleep(3)
                 end = time.time()
-                if round(end - start) > 100:
+                if round(end - start) > 120:
                     break
             
             # Parse the HTML source of the page
@@ -88,7 +91,10 @@ class Linkedin():
             # Find all post tags
             all_post_tags = soup.find_all("li", {"class": "profile-creator-shared-feed-update__container"})
             all_post_details = []
+            print(len(all_post_tags))
+            count = 0
             for post_tag in all_post_tags:
+                count +=1
                 post_details = {}
                 post_date = post_tag.find("a", {"class": "app-aware-link update-components-actor__sub-description-link"})
                 if post_date:
@@ -110,7 +116,9 @@ class Linkedin():
                     all_post_details.append(post_details)
 
             profile_details[f"{user_name} post info"] = all_post_details
-
+        df = pd.DataFrame(all_post_details)
+        df.to_excel(excel_file_path, index=False)
+        print("######## Total post count ########", count)
         print(profile_details)
         driver.quit()
 
